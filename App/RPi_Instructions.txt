@@ -17,8 +17,25 @@ Step 4: Clone the repository
 Step 5: Get your Pi's IP address
    hostname -I
 
-   # Example: RPi_IP=192.168.1.100 docker-compose up -d --build
-   RPi_IP=192.168.1.100 docker-compose up -d --build
+Step 6: Start the application (Sequential Build recommended for RPi)
+   # Running both builds at once can crash the Pi. Do them one by one:
+   
+   # A. Build the Backend
+   RPi_IP=192.168.1.100 docker-compose build tranga-api
+   
+   # B. Build the Frontend
+   RPi_IP=192.168.1.100 docker-compose build tranga-frontend
+   
+   # C. Start everything
+   RPi_IP=192.168.1.100 docker-compose up -d
 
 Step 7: Access the app
    Open a browser on your computer and go to: http://192.168.1.100
+
+Troubleshooting Crashes:
+If your Pi freezes during build, it's likely out of memory (OOM). 
+Try increasing your swap file:
+1. sudo nano /etc/dphys-swapfile
+2. Change CONF_SWAPSIZE=100 to CONF_SWAPSIZE=2048
+3. sudo /etc/init.d/dphys-swapfile restart
+4. Try the build commands in Step 6 again.
