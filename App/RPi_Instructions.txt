@@ -18,21 +18,33 @@ Step 5: Get your Pi's IP address
    hostname -I
 
 Step 6: Start the application
-   # We are now using pre-built images from GitHub to save memory on your Pi Zero.
+   # We are now using pre-built images from GitHub to save memory on your Pi Zero 2W.
    
-   # A. Pull the latest code and images
+   # A. Pull the latest code
    git pull origin main
+   
+   # B. Download the pre-built images
+   # If this says "denied", see the Troubleshooting section below!
    RPi_IP=<YOUR_PI_IP> docker-compose pull
    
-   # B. Start everything
+   # C. Start everything
    RPi_IP=<YOUR_PI_IP> docker-compose up -d
 
 Step 7: Access the app
    Open a browser on your computer and go to: http://<YOUR_PI_IP>
 
-Troubleshooting for Pi Zero 2W:
-Since this device has limited RAM (512MB), we build the images on GitHub instead of on the Pi.
-If it still feels slow:
-1. Ensure your Swap is set to 2048MB (see previous instructions).
+Troubleshooting: "Permission Denied" on Pull
+GitHub makes new packages "Private" by default. You need to make them "Public" so your Pi can download them without a login:
+1. Go to your GitHub profile and click the "Packages" tab.
+2. Click on "tranga-app-api" and "tranga-app-frontend".
+3. Go to "Package Settings".
+4. Scroll to the bottom and click "Change visibility".
+5. Set to "Public" and confirm.
+6. Try Step 6B again.
+
+Troubleshooting: Crashes/Freezes
+If your Pi Zero 2W still feels slow:
+1. Ensure your Swap is set to 2048MB:
+   - sudo nano /etc/dphys-swapfile -> Change CONF_SWAPSIZE=2048
+   - sudo /etc/init.d/dphys-swapfile restart
 2. Use a high-speed SD card (Class 10 / A1).
-3. Give it a few minutes to start up on the first run.
