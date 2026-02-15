@@ -49,7 +49,9 @@
       <None Include="Log4Net.config.xml" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
     </ItemGroup>
 
+    <PropertyGroup>
         <IncludeGitInformation>false</IncludeGitInformation>
+    </PropertyGroup>
 
     <ItemGroup>
         <CompilerVisibleProperty Include="IncludeGitInformation" />
