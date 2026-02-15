@@ -12,7 +12,7 @@ Step 3: Reboot your Pi (Important for Docker permissions)
 
 Step 4: Clone the repository
    git clone https://github.com/EdiynB/Tranga-App.git
-   cd Tranga-App
+   cd Tranga-App/App
 
 Step 5: Get your Pi's IP address
    hostname -I
