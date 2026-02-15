@@ -7,7 +7,7 @@ Step 2: Install Git and Docker
    sudo usermod -aG docker $USER
    sudo apt install -y git
 
-Step 3: Reboot your Pi (Important for Docker permissions)
+Step 3: Reboot your Pi
    sudo reboot
 
 Step 4: Clone the repository
@@ -17,25 +17,22 @@ Step 4: Clone the repository
 Step 5: Get your Pi's IP address
    hostname -I
 
-Step 6: Start the application (Sequential Build recommended for RPi)
-   # Running both builds at once can crash the Pi. Do them one by one:
+Step 6: Start the application
+   # We are now using pre-built images from GitHub to save memory on your Pi Zero.
    
-   # A. Build the Backend
-   RPi_IP=192.168.1.100 docker-compose build tranga-api
+   # A. Pull the latest code and images
+   git pull origin main
+   RPi_IP=<YOUR_PI_IP> docker-compose pull
    
-   # B. Build the Frontend
-   RPi_IP=192.168.1.100 docker-compose build tranga-frontend
-   
-   # C. Start everything
-   RPi_IP=192.168.1.100 docker-compose up -d
+   # B. Start everything
+   RPi_IP=<YOUR_PI_IP> docker-compose up -d
 
 Step 7: Access the app
-   Open a browser on your computer and go to: http://192.168.1.100
+   Open a browser on your computer and go to: http://<YOUR_PI_IP>
 
-Troubleshooting Crashes:
-If your Pi freezes during build, it's likely out of memory (OOM). 
-Try increasing your swap file:
-1. sudo nano /etc/dphys-swapfile
-2. Change CONF_SWAPSIZE=100 to CONF_SWAPSIZE=2048
-3. sudo /etc/init.d/dphys-swapfile restart
-4. Try the build commands in Step 6 again.
+Troubleshooting for Pi Zero 2W:
+Since this device has limited RAM (512MB), we build the images on GitHub instead of on the Pi.
+If it still feels slow:
+1. Ensure your Swap is set to 2048MB (see previous instructions).
+2. Use a high-speed SD card (Class 10 / A1).
+3. Give it a few minutes to start up on the first run.

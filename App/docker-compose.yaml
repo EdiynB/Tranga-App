@@ -3,6 +3,7 @@ services:
     build:
       context: ./Backend
       dockerfile: Dockerfile
+    image: ghcr.io/ediynb/tranga-app-api:latest
     container_name: tranga-api
     ports:
       - "6531:6531"
@@ -28,6 +29,7 @@ services:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
+    image: ghcr.io/ediynb/tranga-app-frontend:latest
     container_name: tranga-frontend
     ports:
       - "80:80"
