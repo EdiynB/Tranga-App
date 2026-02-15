@@ -7,8 +7,8 @@ USER root
 
 # Add ppa:xtradeb/apps for non-snap Chromium install
 RUN apt-get update \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository ppa:xtradeb/apps
+  && apt-get install -y software-properties-common \
+  && add-apt-repository ppa:xtradeb/apps
 
 RUN apt-get update \
   && apt-get install -y libx11-6 libx11-xcb1 libatk1.0-0t64 libgtk-3-0t64 libcups2t64 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libpango-1.0-0 libcairo2 libasound2t64 libxshmfence1 libnss3 ungoogled-chromium \
@@ -23,8 +23,7 @@ COPY API/API.csproj /src/API/API.csproj
 RUN dotnet restore /src/API/API.csproj
 
 COPY . /src/
-RUN --mount=type=cache,id=nuget,target=/root/.nuget/packages \
-    dotnet publish /src/API/API.csproj -c Release --property:OutputPath=/publish -maxcpucount:1 --no-cache
+dotnet publish /src/API/API.csproj -c Release --property:OutputPath=/publish -maxcpucount:1 --no-cache
 
 FROM base AS runtime
 WORKDIR /publish
