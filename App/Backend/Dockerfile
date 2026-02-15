@@ -23,7 +23,7 @@ COPY API/API.csproj /src/API/API.csproj
 RUN dotnet restore /src/API/API.csproj
 
 COPY . /src/
-RUN dotnet publish /src/API/API.csproj -c Release --property:OutputPath=/publish -maxcpucount:1 --no-cache
+RUN dotnet publish /src/API/API.csproj -c Release --property:OutputPath=/publish -maxcpucount:1 --no-cache -p:Version=1.0.0-docker
 
 FROM base AS runtime
 WORKDIR /publish
