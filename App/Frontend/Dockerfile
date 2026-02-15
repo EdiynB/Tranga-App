@@ -29,13 +29,16 @@ COPY --from=build /app/dist ./
 
 # Template nginx config with envsubst for dynamic API_HOST
 COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
-RUN apk add --no-cache gettext && \
-    envsubst '${API_HOST}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
-    rm /etc/nginx/conf.d/default.conf.template
 
-# Runtime environment (editable via docker-compose)
-ENV API_HOST="https://trangaapi.tjcs.io"
+# Copy entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Default env var (can be overridden at runtime)
+ENV API_HOST="http://localhost:6531"
 
 EXPOSE 80
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
