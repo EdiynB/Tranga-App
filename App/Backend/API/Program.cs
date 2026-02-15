@@ -22,8 +22,7 @@ string tranga =
     "  |   |  |   _||  _  ||     ||  _  ||  _  |\n" +
     "  |___|  |__|  |___._||__|__||___  ||___._|\n" +
     "                             |_____|       \n" +
-    $"Built at {BuildInformation.BuildAt} for {BuildInformation.Platform} version {BuildInformation.DotNetSdkVersion}\n" +
-    $"branch: {ThisAssembly.Git.Branch} commit: {ThisAssembly.Git.Commit} tag: {ThisAssembly.Git.Tag}\n\n";
+    $"Built at {BuildInformation.BuildAt} for {BuildInformation.Platform} version {BuildInformation.DotNetSdkVersion}\n\n";
 
 XmlConfigurator.ConfigureAndWatch(new FileInfo("Log4Net.config.xml"));
 ILog log = LogManager.GetLogger("Startup");
