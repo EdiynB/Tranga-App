@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://trangaapi.tjcs.io',
+  baseURL: (window.__ENV__ && window.__ENV__.API_HOST) || import.meta.env.VITE_API_URL || 'https://trangaapi.tjcs.io',
   headers: {
     'Content-Type': 'application/json',
   },
