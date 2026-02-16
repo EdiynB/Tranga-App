@@ -47,8 +47,6 @@ services:
   tranga-pg:
     image: postgres:17
     container_name: tranga-pg
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
