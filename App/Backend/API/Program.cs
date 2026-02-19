@@ -152,16 +152,31 @@ try //Connect to DB and apply migrations
     using (IServiceScope scope = app.Services.CreateScope())
     {
         MangaContext context = scope.ServiceProvider.GetRequiredService<MangaContext>();
+        
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+        log.DebugFormat("Pending migrations for MangaContext: {0}", string.Join(", ", pendingMigrations));
+        
         await context.Database.MigrateAsync(CancellationToken.None);
+        
+        var appliedMigrations = await context.Database.GetAppliedMigrationsAsync();
+        log.DebugFormat("Applied migrations for MangaContext: {0}", string.Join(", ", appliedMigrations));
 
-        if (!await context.FileLibraries.AnyAsync())
+        try 
         {
-            await context.FileLibraries.AddAsync(new(TrangaSettings.DefaultDownloadLocation, "Default FileLibrary"),
-                CancellationToken.None);
-            
-
-            if(await context.Sync(CancellationToken.None, reason: "Add default library") is { success: false } contextException)
-                log.ErrorFormat("Failed to save database changes: {0}", contextException.exceptionMessage);
+            if (!await context.FileLibraries.AnyAsync())
+            {
+                log.Info("No FileLibraries found, adding default...");
+                await context.FileLibraries.AddAsync(new(TrangaSettings.DefaultDownloadLocation, "Default FileLibrary"),
+                    CancellationToken.None);
+                
+                if(await context.Sync(CancellationToken.None, reason: "Add default library") is { success: false } contextException)
+                    log.ErrorFormat("Failed to save default library: {0}", contextException.exceptionMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            log.Error("Error checking FileLibraries table existence!", ex);
+            throw; // Rethrow to trigger the fatal error block
         }
     }
 
