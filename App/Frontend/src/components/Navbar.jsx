@@ -25,7 +25,10 @@ export default function Navbar() {
           <BookOpen size={20} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Tranga</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold">Tranga</h1>
+            <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded border border-primary/30 font-mono">2026.02.19.V1</span>
+          </div>
           <div className="text-sm text-muted">Manga tracker & downloader</div>
         </div>
       </div>

@@ -40,9 +40,15 @@ const useApi = async (url, method = 'GET', data = null) => {
     const response = await api[method.toLowerCase()](url, data);
     return response.data;
   } catch (error) {
-    console.error(`API error for ${url}:`, error);
+    const targetUrl = `${api.defaults.baseURL}${url}`;
+    console.error(`[API] Connection failed to ${targetUrl}:`, error);
+
+    // Enrich error message for UI
+    if (error.message === 'Network Error') {
+      error.message = `Network Error: Could not reach ${targetUrl}. Is the backend running?`;
+    }
+
     if (error.response?.status === 401) {
-      // Handle auth, e.g., redirect to login
       window.location.href = '/login';
     }
     throw error;
