@@ -70,20 +70,16 @@ export default function Search() {
     setIsSearching(true);
     try {
       if (query.startsWith('http://') || query.startsWith('https://')) {
-        // URL search: POST /v2/Search/Url with body as plain JSON string (URL)
-        const response = await useApi('/v2/Search/Url', 'POST', query); // Send string directly
-        console.log('Full URL response:', response); // Debug full response
-        console.log('Raw response.data:', response.data); // Debug data
-        console.log('Has key?', response.data?.key); // Debug key existence
-        const mangaData = response.data ? (Array.isArray(response.data) ? response.data : [response.data]) : [];
-        console.log('Raw mangaData:', mangaData); // Debug before filter
-        // Temporarily skip filter to test setter
+        // URL search: GET /v2/Search?url=... (Backend expectation)
+        const response = await useApi(`/v2/Search?url=${encodeURIComponent(query)}`, 'GET');
+        console.log('Full URL response:', response);
+        const mangaData = response ? (Array.isArray(response) ? response : [response]) : [];
         setResults(mangaData);
         console.log('Set results to:', mangaData); // Debug after set
         showToast('URL search completed', 'success');
       } else {
         // Regular search: Use contextSearch for connector/query, pass dummy setters for loading/isSearching
-        await contextSearch(query, selectedConnector, () => {}, () => {}, setError);
+        await contextSearch(query, selectedConnector, () => { }, () => { }, setError);
       }
     } catch (err) {
       console.error('Search error:', err);
@@ -127,7 +123,7 @@ export default function Search() {
 
   console.log('Search: Rendering grid with', localFilteredResults.length, 'items');
   console.log('localFilteredResults data:', localFilteredResults);
-  
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Single row, uniform height */}
@@ -140,8 +136,8 @@ export default function Search() {
           placeholder="Search manga..."
           className="flex-1 py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all h-10 appearance-none"
         />
-        <select 
-          value={selectedConnector} 
+        <select
+          value={selectedConnector}
           onChange={(e) => setSelectedConnector(e.target.value)}
           className="py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all h-10 appearance-none bg-no-repeat bg-right pr-8 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDEgTDYgNiBMMTExIDEiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=')]"
         >
@@ -149,8 +145,8 @@ export default function Search() {
             <option key={conn} value={conn}>{conn}</option>
           ))}
         </select>
-        <select 
-          value={filters.status} 
+        <select
+          value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           className="py-2.5 px-3 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all h-10 appearance-none bg-no-repeat bg-right pr-8 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDEgTDYgNiBMMTExIDEiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L3N2Zz4=')]"
         >
@@ -161,8 +157,8 @@ export default function Search() {
           <option value="3">Cancelled</option>
           <option value="4">Unreleased</option>
         </select>
-        <button 
-          onClick={handleSearch} 
+        <button
+          onClick={handleSearch}
           className="px-4 py-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all h-10"
         >
           Search
@@ -194,10 +190,10 @@ export default function Search() {
         ) : (
           <div {...handlers} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {(localFilteredResults || []).map((mangaItem, index) => (
-              <MangaCard 
-                key={mangaItem.key || mangaItem.providerId || index} 
-                manga={mangaItem} 
-                onAdd={onAdd} 
+              <MangaCard
+                key={mangaItem.key || mangaItem.providerId || index}
+                manga={mangaItem}
+                onAdd={onAdd}
                 mode="search"
                 libraries={libraries}
                 connectors={connectors}

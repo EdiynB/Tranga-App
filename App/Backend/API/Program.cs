@@ -140,7 +140,7 @@ app.UseSwaggerUI(opts =>
     opts.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
 });
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Disabled for local RPi deployment to prevent SSL issues
 
 try //Connect to DB and apply migrations
 {
