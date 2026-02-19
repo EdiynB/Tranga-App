@@ -1,6 +1,6 @@
 // src/pages/Monitor.jsx (enhanced display)
 import React, { useEffect, useState } from "react";
-import { apiClient } from "../api/client";
+import useApi from "../api/client";
 
 export default function Monitor() {
   const [queue, setQueue] = useState([]);
@@ -8,9 +8,8 @@ export default function Monitor() {
 
   const fetchQueue = async () => {
     try {
-      const client = apiClient();
-      const r = await client.get("/v2/DownloadQueue");
-      setQueue(r.data || []);
+      const data = await useApi("/v2/DownloadQueue");
+      setQueue(data || []);
     } catch (err) {
       console.error(err);
     } finally {

@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import { apiClient } from '../api/client';
+import useApi from '../api/client';
 
 const SearchContext = createContext();
 
@@ -22,16 +21,14 @@ export const SearchProvider = ({ children }) => {
     console.log('Search called with:', searchQuery, connector);
     try {
       setError(null); // Clear error
-      const client = apiClient();
       let data = [];
       if (connector === '') {
         // Global: parallel calls to enabled connectors, merge unique by key, collect connectors per manga
-        const connectorsRes = await client.get('/v2/MangaConnector');
-        const enabled = connectorsRes.data.filter(c => c.enabled).map(c => c.name);
-        const promises = enabled.map(conn => 
-          client.get(`/v2/Search/${conn}/${encodeURIComponent(searchQuery)}`).then(res => {
-            const items = res.data || [];
-            return items.map(item => ({...item, sourceConnector: conn}));
+        const connectorsRes = await useApi('/v2/MangaConnector');
+        const enabled = connectorsRes.filter(c => c.enabled).map(c => c.name);
+        const promises = enabled.map(conn =>
+          useApi(`/v2/Search/${conn}/${encodeURIComponent(searchQuery)}`).then(items => {
+            return (items || []).map(item => ({ ...item, sourceConnector: conn }));
           })
         );
         const allDataWithSource = await Promise.all(promises);
@@ -39,7 +36,7 @@ export const SearchProvider = ({ children }) => {
         const mangaMap = new Map();
         flatWithSource.forEach(item => {
           if (!mangaMap.has(item.key)) {
-            mangaMap.set(item.key, {...item, availableConnectors: []});
+            mangaMap.set(item.key, { ...item, availableConnectors: [] });
           }
           const manga = mangaMap.get(item.key);
           if (!manga.availableConnectors.includes(item.sourceConnector)) {
@@ -50,8 +47,8 @@ export const SearchProvider = ({ children }) => {
         console.log('Global merged results:', data);
       } else {
         // Single connector
-        const response = await client.get(`/v2/Search/${connector}/${encodeURIComponent(searchQuery)}`);
-        data = (response.data || []).map(d => ({...d, availableConnectors: [connector]}));
+        const responseData = await useApi(`/v2/Search/${connector}/${encodeURIComponent(searchQuery)}`);
+        data = (responseData || []).map(d => ({ ...d, availableConnectors: [connector] }));
         console.log('Single connector results:', data);
       }
       setResults(data);

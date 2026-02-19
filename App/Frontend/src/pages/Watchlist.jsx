@@ -6,7 +6,6 @@ import MangaCard from '../components/MangaCard';
 import QuickActions from '../components/QuickActions';
 import Toast from '../components/Toast';
 import useApi from '../api/client';
-import { apiClient } from '../api/client';
 import { useData } from '../context/DataContext';
 
 export default function Watchlist() {
@@ -41,16 +40,14 @@ export default function Watchlist() {
     console.log('Library mount effect');
     const loadLibrary = async () => {
       try {
-        const client = apiClient();
-        const response = await client.get('/v2/Manga/Downloading');
-        const data = response.data || [];
+        const data = await useApi('/v2/Manga/Downloading') || [];
 
         // Enrich with lastDownloadedChapter
         const enrichedManga = await Promise.all(
           data.map(async (m) => {
             try {
-              const downloadedChapters = await useApi(`/v2/Chapters/Manga/${m.key}`, 'POST', JSON.stringify({ downloaded: true }));
-              const lastDownloaded = downloadedChapters?.length > 0 
+              const downloadedChapters = await useApi(`/v2/Chapters/Manga/${m.key}`, 'POST', { downloaded: true });
+              const lastDownloaded = downloadedChapters?.length > 0
                 ? Math.max(...downloadedChapters.map(ch => ch.chapterNumber || 0))
                 : 0;
               return { ...m, lastDownloadedChapter: lastDownloaded };
@@ -97,14 +94,14 @@ export default function Watchlist() {
       if (filters.sortBy === 'title') {
         valA = a.name || '';
         valB = b.name || '';
-        return filters.sortDirection === 'asc' 
-          ? valA.localeCompare(valB) 
+        return filters.sortDirection === 'asc'
+          ? valA.localeCompare(valB)
           : valB.localeCompare(valA);
       } else if (filters.sortBy === 'last-chap') {
         valB = a.lastDownloadedChapter || 0;
         valA = b.lastDownloadedChapter || 0;
-        return filters.sortDirection === 'asc' 
-          ? valA - valB 
+        return filters.sortDirection === 'asc'
+          ? valA - valB
           : valB - valA;
       }
       return 0;
@@ -119,9 +116,9 @@ export default function Watchlist() {
   };
 
   const handleSelect = (id) => {
-    setSelected(prev => 
-      prev.includes(id) 
-        ? prev.filter(s => s !== id) 
+    setSelected(prev =>
+      prev.includes(id)
+        ? prev.filter(s => s !== id)
         : [...prev, id]
     );
   };
@@ -253,16 +250,16 @@ export default function Watchlist() {
           </div>
         ) : (
           filteredWatchlist.map(mangaItem => (
-            <MangaCard 
-              key={mangaItem.providerId || mangaItem.key || Math.random()} 
-              manga={mangaItem} 
+            <MangaCard
+              key={mangaItem.providerId || mangaItem.key || Math.random()}
+              manga={mangaItem}
               checkbox={true}
               onSelect={handleSelect}
               mode="watchlist"
               libraries={libraries}
               connectors={connectors}
               selectedLibrary={filters.library}
-              setSelectedLibrary={() => {}} // No-op since integrated
+              setSelectedLibrary={() => { }} // No-op since integrated
             />
           ))
         )}

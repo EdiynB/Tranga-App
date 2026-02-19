@@ -1,11 +1,29 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  const envHost = window.__ENV__ && window.__ENV__.API_HOST;
+  // If envHost is valid (not empty and not just "http://:6531"), use it
+  if (envHost && envHost !== 'http://:6531' && envHost !== 'https://:6531') return envHost;
+
+  // Fallback 1: Vite build-time variable
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+
+  // Fallback 2: If we are on an IP or non-localhost domain, assume API is on 6531 of the same machine
+  const { hostname, protocol } = window.location;
+  if (hostname !== 'localhost' && !hostname.includes('tjcs.io')) {
+    return `${protocol}//${hostname}:6531`;
+  }
+
+  // Final fallback
+  return 'https://trangaapi.tjcs.io';
+};
+
 const api = axios.create({
-  baseURL: (window.__ENV__ && window.__ENV__.API_HOST) || import.meta.env.VITE_API_URL || 'https://trangaapi.tjcs.io',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // Global timeout
+  timeout: 45000, // Increased timeout for slow RPi/Connectors
 });
 
 // Auth interceptor if needed (add if not present)
@@ -37,7 +55,7 @@ export const apiClient = () => api;
 // Enhanced getCoverAsBlob with proper blob handling
 export const getCoverAsBlob = async (mangaId, size = 'Original') => {
   try {
-    const response = await api.get(`/v2/Manga/${mangaId}/Cover/${size}`, { 
+    const response = await api.get(`/v2/Manga/${mangaId}/Cover/${size}`, {
       responseType: 'blob',
       timeout: 45000 // Increased for slow covers
     });

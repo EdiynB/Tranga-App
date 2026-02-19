@@ -1,6 +1,6 @@
 // src/components/ConnectorsPanel.jsx (updated to use API endpoint)
 import React, { useEffect, useState } from "react";
-import { apiClient } from "../api/client";
+import useApi from "../api/client";
 
 export default function ConnectorsPanel() {
   const [connectors, setConnectors] = useState([]);
@@ -12,9 +12,7 @@ export default function ConnectorsPanel() {
       setLoading(true);
       setError("");
       try {
-        const client = apiClient();
-        const resp = await client.get("/v2/MangaConnector");
-        const allConnectors = resp.data || [];
+        const allConnectors = await useApi("/v2/MangaConnector") || [];
         const enabledConnectors = allConnectors.filter(c => c.enabled).sort((a, b) => a.name.localeCompare(b.name));
         setConnectors(enabledConnectors);
         console.log('ConnectorsPanel loaded:', enabledConnectors.map(c => ({ name: c.name, icon: c.iconUrl }))); // Debug

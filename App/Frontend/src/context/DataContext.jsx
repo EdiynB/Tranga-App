@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { apiClient } from '../api/client';
+import useApi from '../api/client';
 
 const DataContext = createContext();
 
@@ -10,13 +10,12 @@ export const DataProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const client = apiClient();
-        const [libRes, connRes] = await Promise.all([
-          client.get('/v2/FileLibrary'),
-          client.get('/v2/MangaConnector')
+        const [libData, connData] = await Promise.all([
+          useApi('/v2/FileLibrary'),
+          useApi('/v2/MangaConnector')
         ]);
-        setLibraries(libRes.data || []);
-        setConnectors((connRes.data || []).filter(c => c.enabled));
+        setLibraries(libData || []);
+        setConnectors((connData || []).filter(c => c.enabled));
       } catch (error) {
         console.error('Failed to fetch cached data:', error);
       }
