@@ -2,20 +2,21 @@ import axios from 'axios';
 
 const getBaseURL = () => {
   const envHost = window.__ENV__ && window.__ENV__.API_HOST;
-  // If envHost is valid (not empty and not just "http://:6531"), use it
-  if (envHost && envHost !== 'http://:6531' && envHost !== 'https://:6531') return envHost;
+  let url = 'https://trangaapi.tjcs.io';
 
-  // Fallback 1: Vite build-time variable
-  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
-
-  // Fallback 2: If we are on an IP or non-localhost domain, assume API is on 6531 of the same machine
-  const { hostname, protocol } = window.location;
-  if (hostname !== 'localhost' && !hostname.includes('tjcs.io')) {
-    return `${protocol}//${hostname}:6531`;
+  if (envHost && envHost !== 'http://:6531' && envHost !== 'https://:6531') {
+    url = envHost;
+  } else if (import.meta.env.VITE_API_URL) {
+    url = import.meta.env.VITE_API_URL;
+  } else {
+    const { hostname, protocol } = window.location;
+    if (hostname !== 'localhost' && !hostname.includes('tjcs.io')) {
+      url = `${protocol}//${hostname}:6531`;
+    }
   }
 
-  // Final fallback
-  return 'https://trangaapi.tjcs.io';
+  console.log('[API] Chosen BaseURL:', url, '(Source:', envHost ? 'ENV' : 'Auto-Detect', ')');
+  return url;
 };
 
 const api = axios.create({
