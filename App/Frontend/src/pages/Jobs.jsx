@@ -76,7 +76,7 @@ export default function Jobs() {
       await useApi(`/v2/Manga/ForceRecheck/${mangaId}`, 'POST'); // Fixed: Use mangaId param
       showToast(`Manga re-check triggered for ${mangaId}!`, 'success');
       // Refetch pending for this manga only
-      const updatedPending = pendingManga.map(p => 
+      const updatedPending = pendingManga.map(p =>
         p.key === mangaId ? { ...p, pendingChapters: [] } : p // Clear pending for this manga
       );
       setPendingManga(updatedPending);
@@ -96,8 +96,8 @@ export default function Jobs() {
       await useApi(`/v2/Manga/ForceRecheck/Chapter/${chapterId}`, 'POST'); // Fixed: Full path with /Manga/
       showToast(`Chapter re-check triggered for ${chapterId}!`, 'success');
       // Refetch pending chapters for this manga
-      const chaptersRes = await fetch(`/v2/Chapters/Manga/${m.key}?page=1&pageSize=1000`, 'POST', JSON.stringify({ downloaded: false }));
-      const updatedPending = pendingManga.map(p => 
+      const chaptersRes = await useApi(`/v2/Chapters/Manga/${mangaId}?page=1&pageSize=1000`, 'POST', { downloaded: false });
+      const updatedPending = pendingManga.map(p =>
         p.key === mangaId ? { ...p, pendingChapters: chaptersRes || [] } : p
       );
       setPendingManga(updatedPending);
@@ -150,9 +150,9 @@ export default function Jobs() {
         </div>
       </div>
 
-      <motion.section 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
+      <motion.section
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         className="space-y-4"
       >
         {pendingManga.length === 0 ? (
@@ -161,7 +161,7 @@ export default function Jobs() {
           pendingManga.map(m => (
             <div key={m.key} className="border p-4 rounded bg-var-surface flex gap-4" style={{ borderColor: 'var(--color-muted)' }}>
               {/* Cover Left - Clickable */}
-              <div 
+              <div
                 className="w-40 h-56 relative flex-shrink-0 cursor-pointer"
                 onClick={() => handleMangaClick(m.key)}
               >
@@ -170,8 +170,8 @@ export default function Jobs() {
               {/* Name Top + Manga Re-check Button (red, top-right in line with title) */}
               <div className="flex-1 relative">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 
-                    className="text-lg font-bold cursor-pointer hover:underline" 
+                  <h3
+                    className="text-lg font-bold cursor-pointer hover:underline"
                     onClick={() => handleMangaClick(m.key)}
                   >
                     {m.name}
@@ -187,9 +187,9 @@ export default function Jobs() {
                 </div>
                 {/* Scrollable Chapters - Increased max-h for larger cover */}
                 <div className="max-h-96 overflow-y-auto space-y-2">
-                  { m.pendingChapters.map(ch => (
-                    <div 
-                      key={ch.key} 
+                  {m.pendingChapters.map(ch => (
+                    <div
+                      key={ch.key}
                       className="flex items-center gap-2 p-2 bg-var-surface rounded border border-var-muted cursor-pointer hover:bg-var-surface/80 dark:hover:bg-gray-600 transition-colors"
                       onClick={() => handleChapterClick(m.key, ch.chapterNumber)}
                     >
@@ -208,7 +208,7 @@ export default function Jobs() {
                         </button>
                       </span>
                     </div>
-                  )) }
+                  ))}
                 </div>
               </div>
             </div>

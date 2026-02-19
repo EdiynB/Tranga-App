@@ -58,9 +58,7 @@ export const getCoverAsBlob = async (mangaId, size = 'Original') => {
 
 export const getDownloadedChaptersCount = async (mangaId) => {
   try {
-    const response = await fetch(`/v2/Manga/${mangaId}/Chapters/Downloaded`);
-    if (!response.ok) throw new Error('Failed to fetch downloaded chapters');
-    const data = await response.json();
+    const data = await useApi(`/v2/Manga/${mangaId}/Chapters/Downloaded`);
     return data.length || 0;
   } catch (error) {
     console.error('Error fetching downloaded chapters:', error);
@@ -70,9 +68,7 @@ export const getDownloadedChaptersCount = async (mangaId) => {
 
 export const getTotalChaptersCount = async (mangaId) => {
   try {
-    const response = await fetch(`/v2/Manga/${mangaId}/Chapters`);
-    if (!response.ok) throw new Error('Failed to fetch total chapters');
-    const data = await response.json();
+    const data = await useApi(`/v2/Manga/${mangaId}/Chapters`);
     return data.length || 0;
   } catch (error) {
     console.error('Error fetching total chapters:', error);
