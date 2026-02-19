@@ -89,13 +89,17 @@ NpgsqlConnectionStringBuilder connectionStringBuilder = new()
 };
 
 builder.Services.AddDbContext<MangaContext>(options =>
-    options.UseNpgsql(connectionStringBuilder.ConnectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString, 
+        o => o.MigrationsHistoryTable("__MangaMigrationsHistory")));
 builder.Services.AddDbContext<NotificationsContext>(options =>
-    options.UseNpgsql(connectionStringBuilder.ConnectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString,
+        o => o.MigrationsHistoryTable("__NotificationsMigrationsHistory")));
 builder.Services.AddDbContext<LibraryContext>(options =>
-    options.UseNpgsql(connectionStringBuilder.ConnectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString,
+        o => o.MigrationsHistoryTable("__LibraryMigrationsHistory")));
 builder.Services.AddDbContext<ActionsContext>(options =>
-    options.UseNpgsql(connectionStringBuilder.ConnectionString));
+    options.UseNpgsql(connectionStringBuilder.ConnectionString,
+        o => o.MigrationsHistoryTable("__ActionsMigrationsHistory")));
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {
